@@ -59,6 +59,13 @@ class ImgPatches(nn.Module):
         return patches
 
 def UpSampling(x, H, W):
+        # 生成器操作过程：
+        # 1、生成器接收数据，经过MLP模块形成长序列
+        # 2、长序列经过第一次transformer的encoder块处理
+        # 3、一次encoder之后开始第一次2倍上采样(PixelShuffle)
+        # 4、一共三次encoder，两次上采样，最后线性加权
+        # 初步想法：
+        # 两次上采样使用卷积与反卷积，FCN或者Unet
         B, N, C = x.size()
         assert N == H*W
         x = x.permute(0, 2, 1)
