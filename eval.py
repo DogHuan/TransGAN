@@ -6,29 +6,28 @@ from torchvision import transforms as tvt
 
 
 def get_generator_net():
-    net = Generator(depth1=5, depth2=4, depth3=2, initial_size=8, dim=384, heads=4, mlp_ratio=4,
+    generator = Generator(depth1=5, depth2=4, depth3=2, initial_size=8, dim=384, heads=4, mlp_ratio=4,
                     drop_rate=0.5)  # ,device = device)
 
     state_dict = torch.load("checkpoint/checkpoint.pth")['generator_state_dict']
-    net.load_state_dict(state_dict, strict=True)
-    net.to("cuda")
-    return net
+    generator.load_state_dict(state_dict, strict=True)
+    return generator
 
 
 def get_discriminator_net():
-    net = Discriminator(diff_aug="translation,cutout,color", image_size=32, patch_size=4, input_channel=3,
+    discriminator = Discriminator(diff_aug="translation,cutout,color", image_size=32, patch_size=4, input_channel=3,
                         num_classes=1,
                         dim=384, depth=7, heads=4, mlp_ratio=4,
                         drop_rate=0.)
     state_dict = torch.load("checkpoint/checkpoint.pth")["discriminator_state_dict"]
-    net.load_state_dict(state_dict, strict=True)
-    net.to("cuda")
-    return net
+    discriminator.load_state_dict(state_dict, strict=True)
+    return discriminator
 
 
 def main():
-    generator = get_generator_net()
-    discriminator = get_discriminator_net()
+    device = torch.device("cuda")
+    generator = get_generator_net().to(device)
+    discriminator = get_discriminator_net().to(device)
 
     img = Image.open("image_file")
     img = tvt.ToTensor()(img)
