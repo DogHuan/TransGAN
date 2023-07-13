@@ -32,7 +32,7 @@ parser.add_argument('--lr_dis', type=float, default=0.0001 , help='Learning rate
 parser.add_argument('--weight_decay', type=float, default=1e-3 , help='Weight decay.')
 parser.add_argument('--latent_dim', type=int, default=1024 , help='Latent dimension.')
 parser.add_argument('--n_critic', type=int, default=5 , help='n_critic.')
-parser.add_argument('--max_iter', type=int, default=5000 , help='max_iter.')
+parser.add_argument('--max_iter', type=int, default=500000 , help='max_iter.')
 parser.add_argument('--gener_batch_size', type=int, default=64 , help='Batch size for generator.')
 parser.add_argument('--dis_batch_size', type=int, default=32 , help='Batch size for discriminator.')
 parser.add_argument('--epoch', type=int, default=200 , help='Number of epoch.')
@@ -136,7 +136,7 @@ def train(noise,generator, discriminator, optim_gen, optim_dis,
     transform = transforms.Compose([transforms.Resize(size=(img_size, img_size)),transforms.RandomHorizontalFlip(),transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
     train_set = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-    subset_indices = list(range(1000))
+    subset_indices = list(range(10000))
     cifar10_train_subset = Subset(train_set, subset_indices)
     train_loader = torch.utils.data.DataLoader(dataset=cifar10_train_subset, batch_size=10, shuffle=True)
 
@@ -203,7 +203,7 @@ def validate(generator, writer_dict, fid_stat):
         global_steps = writer_dict['valid_global_steps']
 
         generator = generator.eval()
-        fid_score = get_fid(fid_stat, epoch, generator, num_img=500, val_batch_size=60*2, latent_dim=1024, writer_dict=None, cls_idx=None)
+        fid_score = get_fid(fid_stat, epoch, generator, num_img=5000, val_batch_size=60*2, latent_dim=1024, writer_dict=None, cls_idx=None)
 
 
         print(f"FID score: {fid_score}")
