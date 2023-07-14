@@ -3,6 +3,7 @@ from models import Generator, Discriminator
 from PIL import Image
 import numpy as np
 from torchvision import transforms as tvt
+from fid_score import *
 
 
 def get_generator_net():
@@ -28,6 +29,7 @@ def main():
     device = torch.device("cuda")
     generator = get_generator_net().to(device)
     discriminator = get_discriminator_net().to(device)
+    fid_stat = 'fid_stat/fid_stats_cifar10_train.npz'
 
     img = Image.open("image_file")
     img = tvt.ToTensor()(img)
@@ -40,6 +42,11 @@ def main():
     fake_img = generator(noise)
 
     valid = discriminator(fake_img)
+
+    fid_score = get_fid(fid_stat, 200 , generator, num_img=5000, val_batch_size=60 * 2, latent_dim=1024,
+                        writer_dict=None, cls_idx=None)
+
+    print(f"FID score: {fid_score}")
 
 
 if __name__ == "__main__":
